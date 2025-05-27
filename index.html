@@ -308,6 +308,11 @@
             <div class="upload-section">
                 <h3>📷 Subir Imagen a IPFS</h3>
                 
+                <div style="background: #e8f4fd; padding: 10px; border-radius: 5px; margin-bottom: 15px;">
+                    <strong>📋 Proceso:</strong> 
+                    1️⃣ Selecciona imagen → 2️⃣ Configura Pinata (opcional) → 3️⃣ Haz clic "📤 Subir a IPFS" → 4️⃣ Registra detección
+                </div>
+                
                 <div class="drop-zone" id="dropZone" onclick="document.getElementById('imageFile').click()">
                     <p>📷 Haz clic aquí para seleccionar imagen</p>
                     <p><small>Formatos: JPG, PNG, GIF | Máximo: 10MB</small></p>
@@ -522,7 +527,12 @@
                     `Conectado: ${userAccount.slice(0,6)}...${userAccount.slice(-4)}`;
                 document.getElementById('connectWallet').textContent = '✅ Wallet Conectada';
                 document.getElementById('connectWallet').disabled = true;
-                document.getElementById('registerDetection').disabled = false;
+                
+                // IMPORTANTE: Solo habilitar registro si ya hay hash IPFS
+                if (currentIPFSHash) {
+                    document.getElementById('registerDetection').disabled = false;
+                }
+                
                 document.getElementById('responsable').value = userAccount;
                 
                 showStatus('¡Wallet conectada exitosamente!', 'success');
@@ -607,9 +617,10 @@
             };
             reader.readAsDataURL(file);
             
+            // IMPORTANTE: Habilitar el botón de subida a IPFS
             document.getElementById('uploadToIPFS').disabled = false;
             
-            showStatus(`✅ Imagen seleccionada: ${file.name} (${(file.size/1024/1024).toFixed(2)}MB)`, 'success');
+            showStatus(`✅ Imagen seleccionada: ${file.name} (${(file.size/1024/1024).toFixed(2)}MB). Ahora haz clic en "📤 Subir a IPFS"`, 'success');
         }
 
         async function uploadToIPFS() {
@@ -711,11 +722,14 @@
             `;
             resultDiv.style.display = 'block';
             
-            document.getElementById('registerDetection').disabled = false;
+            // IMPORTANTE: Habilitar el botón de registro cuando el hash esté listo
+            if (contract && userAccount) {
+                document.getElementById('registerDetection').disabled = false;
+            }
             
             showStatus(isRealUpload ? 
-                '🎉 ¡Imagen subida exitosamente a IPFS!' :
-                '✅ Hash generado. Listo para registrar detección.', 'success');
+                '🎉 ¡Imagen subida exitosamente a IPFS! Ahora puedes registrar la detección.' :
+                '✅ Hash generado. Ahora puedes registrar la detección.', 'success');
         }
 
         async function registerDetection() {
@@ -843,6 +857,8 @@
             
             currentImageFile = null;
             currentIPFSHash = null;
+            
+            showStatus('✅ Formulario limpiado. Selecciona una nueva imagen para continuar.', 'info');
         }
 
         // Funciones de consulta
