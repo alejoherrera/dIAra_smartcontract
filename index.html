@@ -1,8 +1,21 @@
 <div class="form-group">
-                    <label>🔐 Configuración IPFS - Pinata:</label>
-                    <input type="text" id="pinataApiKey" placeholder="API Key" value="f47bf6389ef9c3e1efc3">
-                    <input type="password" id="pinataSecretKey" placeholder="Secret Key" value="0681121cabe8e2122e6723a90a75f03095bb7b91a1426a27e9351530151feed9">
-                    <input type="password" id="pinataJWT" placeholder="JWT Token (alternativo)" value="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySW5mb3JtYXRpb24iOnsiaWQiOiJlMDE2NjM5Mi1lMTQ5LTQyNGMtOTExOC1lMGY3NmUyNjk1ODMiLCJlbWFpbCI6ImFsZWphbmRyb2hlcnJlcmFjckBnbWFpbC5jb20iLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwicGluX3BvbGljeSI6eyJyZWdpb25zIjpbeyJkZXNpcmVkUmVwbGljYXRpb25Db3VudCI6MSwiaWQiOiJGUkExIn0seyJkZXNpcmVkUmVwbGljYXRpb25Db3VudCI6MSwiaWQiOiJOWUMxIn1dLCJ2ZXJzaW9uIjoxfSwibWZhX2VuYWJsZWQiOmZhbHNlLCJzdGF0dXMiOiJBQ1RJVkUifSwiYXV0aGVudGljYXRpb25UeXBlIjoic2NvcGVkS2V5Iiwic2NvcGVkS2V5S2V5IjoiZjQ3YmY2Mzg5ZWY5YzNlMWVmYzMiLCJzY29wZWRLZXlTZWNyZXQiOiIwNjgxMTIxY2FiZThlMjEyMmU2NzIzYTkwYTc1ZjAzMDk1YmI3YjkxYTE0MjZhMjdlOTM1MTUzMDE1MWZlZWQ5IiwiZXhwIjoxNzc5ODQ3MDA2fQ.qXFsjQ5zIzNuWcT031ygQ_h5<!DOCTYPE html>
+                    <label>🔐 Configuración IPFS - Pinata (Privado):</label>
+                    <input type="text" id="pinataApiKey" placeholder="Tu Pinata API Key">
+                    <input type="password" id="pinataSecretKey" placeholder="Tu Pinata Secret Key">
+                    <input type="password" id="pinataJWT" placeholder="Tu JWT Token (alternativo)">
+                    <small>⚠️ <strong>NUNCA compartas estas credenciales</strong> - Solo tú puedes verlas | <a href="https://app.pinata.cloud/keys" target="_blank">Obtener credenciales</a></small>
+                    <div style="margin-top: 10px;">
+                        <button type="button" class="btn btn-secondary" onclick="saveCredentialsLocally()" style="font-size: 14px; padding: 8px 15px;">
+                            💾 Guardar Localmente
+                        </button>
+                        <button type="button" class="btn btn-secondary" onclick="loadCredentialsLocally()" style="font-size: 14px; padding: 8px 15px;">
+                            📂 Cargar Guardadas
+                        </button>
+                        <button type="button" class="btn btn-secondary" onclick="clearCredentials()" style="font-size: 14px; padding: 8px 15px;">
+                            🗑️ Limpiar
+                        </button>
+                    </div>
+                </div><!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
