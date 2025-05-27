@@ -1,4 +1,8 @@
-<!DOCTYPE html>
+<div class="form-group">
+                    <label>🔐 Configuración IPFS - Pinata:</label>
+                    <input type="text" id="pinataApiKey" placeholder="API Key" value="f47bf6389ef9c3e1efc3">
+                    <input type="password" id="pinataSecretKey" placeholder="Secret Key" value="0681121cabe8e2122e6723a90a75f03095bb7b91a1426a27e9351530151feed9">
+                    <input type="password" id="pinataJWT" placeholder="JWT Token (alternativo)" value="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySW5mb3JtYXRpb24iOnsiaWQiOiJlMDE2NjM5Mi1lMTQ5LTQyNGMtOTExOC1lMGY3NmUyNjk1ODMiLCJlbWFpbCI6ImFsZWphbmRyb2hlcnJlcmFjckBnbWFpbC5jb20iLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwicGluX3BvbGljeSI6eyJyZWdpb25zIjpbeyJkZXNpcmVkUmVwbGljYXRpb25Db3VudCI6MSwiaWQiOiJGUkExIn0seyJkZXNpcmVkUmVwbGljYXRpb25Db3VudCI6MSwiaWQiOiJOWUMxIn1dLCJ2ZXJzaW9uIjoxfSwibWZhX2VuYWJsZWQiOmZhbHNlLCJzdGF0dXMiOiJBQ1RJVkUifSwiYXV0aGVudGljYXRpb25UeXBlIjoic2NvcGVkS2V5Iiwic2NvcGVkS2V5S2V5IjoiZjQ3YmY2Mzg5ZWY5YzNlMWVmYzMiLCJzY29wZWRLZXlTZWNyZXQiOiIwNjgxMTIxY2FiZThlMjEyMmU2NzIzYTkwYTc1ZjAzMDk1YmI3YjkxYTE0MjZhMjdlOTM1MTUzMDE1MWZlZWQ5IiwiZXhwIjoxNzc5ODQ3MDA2fQ.qXFsjQ5zIzNuWcT031ygQ_h5<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
@@ -10,6 +14,52 @@
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+        .image-preview {
+            max-width: 300px;
+            max-height: 300px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            margin: 10px 0;
+            display: block;
+        }
+        
+        .drop-zone {
+            border: 2px dashed #ccc;
+            border-radius: 10px;
+            padding: 30px;
+            text-align: center;
+            margin: 15px 0;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            background: #fafafa;
+        }
+        
+        .drop-zone:hover {
+            border-color: #667eea;
+            background: #f0f8ff;
+        }
+        
+        .drop-zone.dragover {
+            border-color: #667eea;
+            background: #e8f4fd;
+            transform: scale(1.02);
+        }
+        
+        .ipfs-result {
+            background: #e8f5e8;
+            border: 1px solid #c3e6c3;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            word-wrap: break-word;
+        }
+        
+        .upload-section {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
         }
         
         body {
@@ -246,6 +296,16 @@
         <div class="header">
             <h1>dIAra V2</h1>
             <p>Transparencia en Obras Públicas con IoT, IA, Blockchain e IPFS</p>
+            
+            <!-- Aviso de seguridad -->
+            <div style="background: #fff3cd; border: 1px solid #ffeaa7; padding: 15px; border-radius: 8px; margin: 20px 0; text-align: left;">
+                <h4 style="color: #856404;">🔒 Aviso de Seguridad</h4>
+                <p style="color: #856404; margin: 5px 0;">
+                    • Tus credenciales de Pinata solo se guardan <strong>localmente en tu navegador</strong><br>
+                    • <strong>NUNCA</strong> se envían a GitHub ni se comparten públicamente<br>
+                    • Usa el botón "💾 Guardar Localmente" para no ingresarlas cada vez
+                </p>
+            </div>
         </div>
 
         <div class="contract-info">
@@ -302,6 +362,47 @@
 
         <!-- Contenido de Detecciones -->
         <div id="detecciones" class="tab-content">
+            <!-- Sección de subida de imagen -->
+            <div class="upload-section">
+                <h3>📷 Subir Imagen a IPFS</h3>
+                
+                <div class="drop-zone" id="dropZone">
+                    <p>📷 Arrastra tu imagen aquí o haz clic para seleccionar</p>
+                    <p><small>Formatos: JPG, PNG, GIF | Máximo: 10MB</small></p>
+                    <input type="file" id="imageFile" accept="image/*" style="display:none;">
+                    <button type="button" class="btn btn-secondary" onclick="document.getElementById('imageFile').click()">
+                        Seleccionar Imagen
+                    </button>
+                </div>
+                
+                <img id="imagePreview" class="image-preview" style="display:none;" alt="Vista previa">
+                
+                <div class="form-group">
+                    <label>🔐 Configuración IPFS - Pinata (Privado):</label>
+                    <input type="text" id="pinataApiKey" placeholder="Tu Pinata API Key">
+                    <input type="password" id="pinataSecretKey" placeholder="Tu Pinata Secret Key">
+                    <input type="password" id="pinataJWT" placeholder="Tu JWT Token (alternativo)">
+                    <small>⚠️ <strong>NUNCA compartas estas credenciales</strong> - Solo tú puedes verlas | <a href="https://app.pinata.cloud/keys" target="_blank">Obtener credenciales</a></small>
+                    <div style="margin-top: 10px;">
+                        <button type="button" class="btn btn-secondary" onclick="saveCredentialsLocally()" style="font-size: 14px; padding: 8px 15px;">
+                            💾 Guardar Localmente
+                        </button>
+                        <button type="button" class="btn btn-secondary" onclick="loadCredentialsLocally()" style="font-size: 14px; padding: 8px 15px;">
+                            📂 Cargar Guardadas
+                        </button>
+                        <button type="button" class="btn btn-secondary" onclick="clearCredentials()" style="font-size: 14px; padding: 8px 15px;">
+                            🗑️ Limpiar
+                        </button>
+                    </div>
+                </div>
+                
+                <button id="uploadToIPFS" class="btn btn-warning" onclick="uploadToIPFS()" disabled>
+                    📤 Subir a IPFS
+                </button>
+                
+                <div id="ipfsUploadResult" style="display:none;"></div>
+            </div>
+            
             <div class="form-section">
                 <h3>📝 Registrar Nueva Detección (Requiere Gas)</h3>
                 
@@ -328,8 +429,8 @@
                 
                 <div class="form-group">
                     <label for="imagenIPFS">Hash IPFS de la Imagen:</label>
-                    <input type="text" id="imagenIPFS" placeholder="QmXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX" value="QmSimulatedHashForTesting123456789">
-                    <small>Hash de la imagen almacenada en IPFS</small>
+                    <input type="text" id="imagenIPFS" placeholder="Se llenará automáticamente al subir imagen" readonly>
+                    <small>Hash de la imagen almacenada en IPFS - Se genera automáticamente</small>
                 </div>
                 
                 <button id="registerDetection" class="btn" disabled>Registrar Detección</button>
@@ -400,6 +501,8 @@
         let signer = null;
         let contract = null;
         let userAccount = null;
+        let currentImageFile = null;
+        let currentIPFSHash = null;
 
         // Esperar a que el DOM esté completamente cargado
         document.addEventListener('DOMContentLoaded', function() {
@@ -408,6 +511,12 @@
             // Configurar fecha actual
             const today = new Date().toLocaleDateString('es-ES');
             document.getElementById('fechaRegistro').value = today;
+            
+            // Configurar subida de imágenes
+            setupImageUpload();
+            
+            // Intentar cargar credenciales guardadas automáticamente
+            setTimeout(loadCredentialsLocally, 500);
             
             // Obtener elementos del DOM
             const connectWalletBtn = document.getElementById('connectWallet');
@@ -434,6 +543,38 @@
                     if (statusDiv.parentNode) {
                         statusDiv.parentNode.removeChild(statusDiv);
                     }
+            
+            async function uploadToPinataWithJWT(file, jwt) {
+                const formData = new FormData();
+                formData.append('file', file);
+                
+                const metadata = JSON.stringify({
+                    name: `dIAra-deteccion-${Date.now()}-${file.name}`,
+                    keyvalues: {
+                        project: 'dIAra',
+                        type: 'deteccion_ia',
+                        timestamp: Date.now().toString(),
+                        version: 'v2'
+                    }
+                });
+                formData.append('pinataMetadata', metadata);
+
+                const response = await fetch('https://api.pinata.cloud/pinning/pinFileToIPFS', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${jwt}`
+                    },
+                    body: formData
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(`Error de Pinata (JWT): ${errorData.error || response.statusText}`);
+                }
+
+                const result = await response.json();
+                return result.IpfsHash;
+            }
                 }, 5000);
             }
 
@@ -465,6 +606,29 @@
                     connectWalletBtn.textContent = 'Instalar MetaMask';
                     return false;
                 }
+            }
+            
+            function resetDetectionForm() {
+                // Limpiar campos del formulario
+                document.getElementById('numeroProyecto').value = '2025001';
+                document.getElementById('deteccionPersona').value = 'person: 1/.6, 1/.7, 1/.65';
+                document.getElementById('equipos').value = 'aplanadora:1/.8; vagoneta:1/.7';
+                document.getElementById('imagenIPFS').value = '';
+                
+                // Limpiar elementos de imagen
+                document.getElementById('imagePreview').style.display = 'none';
+                document.getElementById('ipfsUploadResult').style.display = 'none';
+                document.getElementById('imageFile').value = '';
+                
+                // Resetear botones
+                document.getElementById('uploadToIPFS').disabled = true;
+                document.getElementById('registerDetection').disabled = true;
+                
+                // Limpiar variables
+                currentImageFile = null;
+                currentIPFSHash = null;
+                
+                showStatus('Formulario limpiado. Listo para nueva detección.', 'info');
             }
 
             // Función para conectar wallet
@@ -722,6 +886,9 @@
                     
                     showStatus(`✅ Detección registrada en bloque ${receipt.blockNumber}!`, 'success');
                     
+                    // Limpiar formulario
+                    resetDetectionForm();
+                    
                     // Actualizar estadísticas
                     setTimeout(loadStats, 2000);
                     
@@ -831,6 +998,260 @@
 
             // Cargar estadísticas iniciales
             setTimeout(loadStats, 1000);
+            
+            // Funciones para manejo seguro de credenciales
+            window.saveCredentialsLocally = function() {
+                const apiKey = document.getElementById('pinataApiKey').value.trim();
+                const secretKey = document.getElementById('pinataSecretKey').value.trim();
+                const jwt = document.getElementById('pinataJWT').value.trim();
+                
+                if (!apiKey && !secretKey && !jwt) {
+                    showStatus('Ingresa al menos una credencial para guardar', 'error');
+                    return;
+                }
+                
+                // Guardar solo en localStorage del navegador (no en GitHub)
+                const credentials = {
+                    apiKey: apiKey,
+                    secretKey: secretKey,
+                    jwt: jwt,
+                    timestamp: Date.now()
+                };
+                
+                try {
+                    localStorage.setItem('diara_pinata_creds', JSON.stringify(credentials));
+                    showStatus('✅ Credenciales guardadas localmente en tu navegador', 'success');
+                } catch (error) {
+                    showStatus('Error guardando credenciales: ' + error.message, 'error');
+                }
+            }
+            
+            window.loadCredentialsLocally = function() {
+                try {
+                    const saved = localStorage.getItem('diara_pinata_creds');
+                    if (!saved) {
+                        showStatus('No hay credenciales guardadas localmente', 'info');
+                        return;
+                    }
+                    
+                    const credentials = JSON.parse(saved);
+                    document.getElementById('pinataApiKey').value = credentials.apiKey || '';
+                    document.getElementById('pinataSecretKey').value = credentials.secretKey || '';
+                    document.getElementById('pinataJWT').value = credentials.jwt || '';
+                    
+                    const savedDate = new Date(credentials.timestamp).toLocaleDateString();
+                    showStatus(`✅ Credenciales cargadas (guardadas el ${savedDate})`, 'success');
+                } catch (error) {
+                    showStatus('Error cargando credenciales: ' + error.message, 'error');
+                }
+            }
+            
+            window.clearCredentials = function() {
+                document.getElementById('pinataApiKey').value = '';
+                document.getElementById('pinataSecretKey').value = '';
+                document.getElementById('pinataJWT').value = '';
+                
+                try {
+                    localStorage.removeItem('diara_pinata_creds');
+                    showStatus('✅ Credenciales limpiadas', 'success');
+                } catch (error) {
+                    showStatus('Error limpiando credenciales: ' + error.message, 'error');
+                }
+            }
+            function setupImageUpload() {
+                const dropZone = document.getElementById('dropZone');
+                const fileInput = document.getElementById('imageFile');
+                
+                // Click en drop zone
+                dropZone.addEventListener('click', () => fileInput.click());
+                
+                // Drag and drop events
+                dropZone.addEventListener('dragover', (e) => {
+                    e.preventDefault();
+                    dropZone.classList.add('dragover');
+                });
+                
+                dropZone.addEventListener('dragleave', () => {
+                    dropZone.classList.remove('dragover');
+                });
+                
+                dropZone.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                    dropZone.classList.remove('dragover');
+                    const files = e.dataTransfer.files;
+                    if (files.length > 0) {
+                        handleFileSelect(files[0]);
+                    }
+                });
+                
+                // File input change
+                fileInput.addEventListener('change', (e) => {
+                    if (e.target.files.length > 0) {
+                        handleFileSelect(e.target.files[0]);
+                    }
+                });
+            }
+            
+            function handleFileSelect(file) {
+                // Validar tipo de archivo
+                if (!file.type.startsWith('image/')) {
+                    showStatus('Por favor selecciona un archivo de imagen válido', 'error');
+                    return;
+                }
+                
+                // Validar tamaño (10MB max)
+                if (file.size > 10 * 1024 * 1024) {
+                    showStatus('La imagen es muy grande. Tamaño máximo: 10MB', 'error');
+                    return;
+                }
+                
+                currentImageFile = file;
+                
+                // Mostrar preview
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const preview = document.getElementById('imagePreview');
+                    preview.src = e.target.result;
+                    preview.style.display = 'block';
+                };
+                reader.readAsDataURL(file);
+                
+                // Habilitar botón de subida
+                document.getElementById('uploadToIPFS').disabled = false;
+                
+                showStatus(`✅ Imagen seleccionada: ${file.name} (${(file.size/1024/1024).toFixed(2)}MB)`, 'success');
+            }
+            
+            // Función global para subir a IPFS
+            window.uploadToIPFS = async function() {
+                if (!currentImageFile) {
+                    showStatus('Selecciona una imagen primero', 'error');
+                    return;
+                }
+                
+                const uploadBtn = document.getElementById('uploadToIPFS');
+                uploadBtn.disabled = true;
+                uploadBtn.innerHTML = '<span class="loading"></span>Subiendo a IPFS...';
+                
+                try {
+                    const apiKey = document.getElementById('pinataApiKey').value.trim();
+                    const secretKey = document.getElementById('pinataSecretKey').value.trim();
+                    const jwt = document.getElementById('pinataJWT').value.trim();
+                    
+                    let ipfsHash;
+                    
+                    if ((apiKey && secretKey) || jwt) {
+                        // Usar Pinata real
+                        showStatus('Subiendo imagen a IPFS con Pinata...', 'info');
+                        if (jwt) {
+                            ipfsHash = await uploadToPinataWithJWT(currentImageFile, jwt);
+                        } else {
+                            ipfsHash = await uploadToPinataReal(currentImageFile, apiKey, secretKey);
+                        }
+                    } else {
+                        // Modo demo
+                        showStatus('Modo demo: Generando hash simulado...', 'info');
+                        ipfsHash = await simulateIPFSUpload(currentImageFile);
+                    }
+                    
+                    handleUploadSuccess(ipfsHash, (apiKey && secretKey) || jwt);
+                    
+                } catch (error) {
+                    console.error('Error subiendo:', error);
+                    showStatus('Error subiendo imagen: ' + error.message, 'error');
+                } finally {
+                    uploadBtn.disabled = false;
+                    uploadBtn.innerHTML = '📤 Subir a IPFS';
+                }
+            }
+            
+            async function uploadToPinataReal(file, apiKey, secretKey) {
+                const formData = new FormData();
+                formData.append('file', file);
+                
+                const metadata = JSON.stringify({
+                    name: `dIAra-${Date.now()}-${file.name}`,
+                    keyvalues: {
+                        project: 'dIAra',
+                        timestamp: Date.now().toString()
+                    }
+                });
+                formData.append('pinataMetadata', metadata);
+                
+                const options = JSON.stringify({
+                    cidVersion: 0
+                });
+                formData.append('pinataOptions', options);
+
+                const response = await fetch('https://api.pinata.cloud/pinning/pinFileToIPFS', {
+                    method: 'POST',
+                    headers: {
+                        'pinata_api_key': apiKey,
+                        'pinata_secret_api_key': secretKey
+                    },
+                    body: formData
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(`Error de Pinata: ${errorData.error || response.statusText}`);
+                }
+
+                const result = await response.json();
+                return result.IpfsHash;
+            }
+            
+            async function simulateIPFSUpload(file) {
+                // Simular tiempo de subida
+                await new Promise(resolve => setTimeout(resolve, 2000));
+                
+                // Generar hash simulado basado en el archivo
+                const fileName = file.name.replace(/[^a-zA-Z0-9]/g, '');
+                const fileSize = file.size.toString();
+                const timestamp = Date.now().toString().slice(-8);
+                
+                // Crear un hash más realista
+                const hashBase = `${fileName}${fileSize}${timestamp}`;
+                const hash = 'Qm' + btoa(hashBase).replace(/[^a-zA-Z0-9]/g, '').substr(0, 44);
+                
+                return hash;
+            }
+            
+            function handleUploadSuccess(hash, isRealUpload = false) {
+                currentIPFSHash = hash;
+                document.getElementById('imagenIPFS').value = hash;
+                
+                const resultDiv = document.getElementById('ipfsUploadResult');
+                
+                resultDiv.innerHTML = `
+                    <div class="ipfs-result">
+                        <h4>✅ ${isRealUpload ? 'Imagen subida a IPFS exitosamente' : 'Hash generado (Modo Demo)'}</h4>
+                        <p><strong>Hash IPFS:</strong> <code>${hash}</code></p>
+                        <p><strong>Archivo:</strong> ${currentImageFile.name}</p>
+                        <p><strong>Tamaño:</strong> ${(currentImageFile.size/1024/1024).toFixed(2)} MB</p>
+                        ${isRealUpload ? 
+                         `<p><strong>🌐 Ver imagen:</strong> 
+                          <a href="https://gateway.pinata.cloud/ipfs/${hash}" target="_blank">Pinata Gateway</a> | 
+                          <a href="https://ipfs.io/ipfs/${hash}" target="_blank">IPFS.io</a></p>
+                          <p><strong>🔗 URLs públicas:</strong></p>
+                          <small>
+                            • https://gateway.pinata.cloud/ipfs/${hash}<br>
+                            • https://ipfs.io/ipfs/${hash}<br>
+                            • https://${hash}.ipfs.dweb.link/
+                          </small>` : 
+                         '<p><small>💡 Para subida real, configura tus credenciales de Pinata</small></p>'}
+                    </div>
+                `;
+                resultDiv.style.display = 'block';
+                
+                // Habilitar registro de detección
+                document.getElementById('registerDetection').disabled = false;
+                
+                const message = isRealUpload ? 
+                    '🎉 ¡Imagen subida exitosamente a IPFS! Ahora está disponible globalmente.' :
+                    '✅ Hash generado. Listo para registrar detección.';
+                showStatus(message, 'success');
+            }
 
             // Detectar cambios de cuenta
             if (window.ethereum) {
