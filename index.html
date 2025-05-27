@@ -20,7 +20,7 @@
         }
         
         .container {
-            max-width: 1000px;
+            max-width: 900px;
             margin: 0 auto;
             background: white;
             border-radius: 15px;
@@ -42,16 +42,6 @@
         .header p {
             color: #666;
             font-size: 1.1em;
-        }
-        
-        .contract-info {
-            background: #f1f3f4;
-            padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            font-family: monospace;
-            font-size: 14px;
-            word-break: break-all;
         }
         
         .wallet-section {
@@ -87,6 +77,38 @@
             border: 1px solid #bee5eb;
         }
         
+        .form-section {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #333;
+        }
+        
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+        
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
         .btn {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
@@ -119,6 +141,10 @@
             background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
         }
         
+        .btn-warning {
+            background: linear-gradient(135deg, #ff9a00 0%, #ffad00 100%);
+        }
+        
         .message-display {
             background: #e9ecef;
             padding: 20px;
@@ -144,43 +170,74 @@
             100% { transform: rotate(360deg); }
         }
         
-        .form-section {
-            background: #f8f9fa;
-            padding: 25px;
-            border-radius: 10px;
+        .contract-info {
+            background: #f1f3f4;
+            padding: 15px;
+            border-radius: 8px;
             margin-bottom: 20px;
-        }
-        
-        .form-group {
-            margin-bottom: 15px;
-        }
-        
-        .form-group label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: bold;
-            color: #333;
-        }
-        
-        .form-group input, .form-group textarea {
-            width: 100%;
-            padding: 10px;
-            border: 2px solid #ddd;
-            border-radius: 5px;
+            font-family: monospace;
             font-size: 14px;
+            word-break: break-all;
         }
         
-        .form-group input:focus, .form-group textarea:focus {
-            outline: none;
-            border-color: #667eea;
+        .tabs {
+            display: flex;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #ddd;
         }
         
-        .debug-section {
+        .tab {
+            padding: 15px 25px;
+            background: #f8f9fa;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background 0.3s;
+        }
+        
+        .tab.active {
+            background: #667eea;
+            color: white;
+        }
+        
+        .tab:hover {
+            background: #e9ecef;
+        }
+        
+        .tab.active:hover {
+            background: #667eea;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .stats {
+            display: flex;
+            justify-content: space-around;
             background: #f8f9fa;
             padding: 20px;
             border-radius: 10px;
             margin-bottom: 20px;
-            border-left: 4px solid #17a2b8;
+        }
+        
+        .stat {
+            text-align: center;
+        }
+        
+        .stat h3 {
+            font-size: 2em;
+            color: #667eea;
+            margin-bottom: 5px;
+        }
+        
+        .stat p {
+            color: #666;
+            font-weight: bold;
         }
     </style>
 </head>
@@ -194,73 +251,148 @@
         <div class="contract-info">
             <strong>Contrato:</strong> 0x4b3072893f161ecb4b7f4794b6a8a036eb22aa27<br>
             <strong>Red:</strong> Sepolia Testnet<br>
-            <strong>Estado:</strong> <span id="contractStatus">Verificando...</span>
+            <strong>Versión:</strong> V2 con Proyectos e IPFS
         </div>
 
         <!-- Sección de Wallet -->
         <div class="wallet-section">
             <h3>🔗 Conectar Wallet</h3>
             <p id="walletStatus">Estado: Desconectado</p>
-            <button id="connectWallet" class="btn" onclick="connectWallet()">Conectar MetaMask</button>
-            <button id="diagnoseBtn" class="btn btn-secondary" onclick="runDiagnosis()">🔍 Diagnóstico</button>
+            <button id="connectWallet" class="btn">Conectar MetaMask</button>
         </div>
 
         <!-- Mensajes de estado -->
         <div id="statusMessages"></div>
 
-        <!-- Sección de diagnóstico -->
-        <div id="diagnosisSection" class="debug-section" style="display:none;">
-            <h4>🔍 Resultados del Diagnóstico:</h4>
-            <div id="diagnosisResults"></div>
+        <!-- Estadísticas -->
+        <div class="stats" id="statsContainer" style="display:none;">
+            <div class="stat">
+                <h3 id="totalProjects">0</h3>
+                <p>Proyectos</p>
+            </div>
+            <div class="stat">
+                <h3 id="totalDetections">0</h3>
+                <p>Detecciones</p>
+            </div>
+            <div class="stat">
+                <h3 id="activeProjects">0</h3>
+                <p>Activos</p>
+            </div>
         </div>
 
-        <!-- Sección de pruebas -->
-        <div class="form-section">
-            <h3>🧪 Pruebas Básicas</h3>
-            <button class="btn btn-secondary" onclick="testMetaMask()">Probar MetaMask</button>
-            <button class="btn btn-secondary" onclick="testContract()">Probar Contrato</button>
-            <button class="btn btn-secondary" onclick="getStats()">Ver Estadísticas</button>
-            
-            <div id="testResults" class="message-display" style="display:none;"></div>
+        <!-- Pestañas -->
+        <div class="tabs">
+            <button class="tab active" onclick="showTab('consultas')">📖 Consultas</button>
+            <button class="tab" onclick="showTab('detecciones')">📝 Detecciones</button>
+            <button class="tab" onclick="showTab('proyectos')" id="proyectosTab" style="display:none;">🏗️ Proyectos</button>
         </div>
 
-        <!-- Crear proyecto simple -->
-        <div class="form-section" style="display:none;" id="adminSection">
-            <h3>🏗️ Crear Proyecto (Solo Administradores)</h3>
-            
-            <div class="form-group">
-                <label for="numeroProyecto">Número de Proyecto:</label>
-                <input type="number" id="numeroProyecto" placeholder="2025001" value="2025001">
+        <!-- Contenido de Consultas -->
+        <div id="consultas" class="tab-content active">
+            <div class="form-section">
+                <h3>📖 Leer Datos (Gratis)</h3>
+                <button id="readLastMessage" class="btn btn-secondary">Leer Último Mensaje</button>
+                <button id="getTotalMessages" class="btn btn-secondary">Total de Mensajes</button>
+                <button id="getStats" class="btn btn-secondary">Estadísticas Completas</button>
+                <button id="getLastDetection" class="btn btn-secondary">Última Detección</button>
+                
+                <div id="readResults"></div>
             </div>
-            
-            <div class="form-group">
-                <label for="nombreProyecto">Nombre del Proyecto:</label>
-                <input type="text" id="nombreProyecto" placeholder="Construcción Puente Central" value="Puente Central">
+        </div>
+
+        <!-- Contenido de Detecciones -->
+        <div id="detecciones" class="tab-content">
+            <div class="form-section">
+                <h3>📝 Registrar Nueva Detección (Requiere Gas)</h3>
+                
+                <div class="form-group">
+                    <label for="numeroProyecto">Número de Proyecto:</label>
+                    <input type="number" id="numeroProyecto" placeholder="Ej: 2025001" value="2025001">
+                    <small>Ingresa el número del proyecto al que pertenece esta detección</small>
+                </div>
+                
+                <div class="form-group">
+                    <label for="deteccionPersona">Detección de Personas:</label>
+                    <input type="text" id="deteccionPersona" placeholder="Ej: person: 1/.6, 1/.7, 1/.65" value="person: 1/.6, 1/.7, 1/.65">
+                </div>
+                
+                <div class="form-group">
+                    <label for="equipos">Equipos Detectados:</label>
+                    <input type="text" id="equipos" placeholder="Ej: aplanadora:1/.8; vagoneta:1/.7" value="aplanadora:1/.8; vagoneta:1/.7">
+                </div>
+                
+                <div class="form-group">
+                    <label for="fechaRegistro">Fecha de Registro:</label>
+                    <input type="text" id="fechaRegistro" placeholder="Ej: 26/05/25" value="">
+                </div>
+                
+                <div class="form-group">
+                    <label for="imagenIPFS">Hash IPFS de la Imagen:</label>
+                    <input type="text" id="imagenIPFS" placeholder="QmXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX" value="QmSimulatedHashForTesting123456789">
+                    <small>Hash de la imagen almacenada en IPFS</small>
+                </div>
+                
+                <button id="registerDetection" class="btn" disabled>Registrar Detección</button>
             </div>
-            
-            <div class="form-group">
-                <label for="responsable">Responsable (tu dirección actual):</label>
-                <input type="text" id="responsable" placeholder="0x..." readonly>
+        </div>
+
+        <!-- Contenido de Proyectos (Solo Administradores) -->
+        <div id="proyectos" class="tab-content">
+            <div class="form-section">
+                <h3>🏗️ Crear Nuevo Proyecto (Solo Administradores)</h3>
+                
+                <div class="form-group">
+                    <label for="newNumeroProyecto">Número de Proyecto:</label>
+                    <input type="number" id="newNumeroProyecto" placeholder="2025001" min="1">
+                </div>
+                
+                <div class="form-group">
+                    <label for="nombreProyecto">Nombre del Proyecto:</label>
+                    <input type="text" id="nombreProyecto" placeholder="Construcción Puente Central">
+                </div>
+                
+                <div class="form-group">
+                    <label for="ubicacion">Ubicación:</label>
+                    <input type="text" id="ubicacion" placeholder="Av. Principal, Zona 1">
+                </div>
+                
+                <div class="form-group">
+                    <label for="descripcion">Descripción:</label>
+                    <textarea id="descripcion" rows="3" placeholder="Descripción del proyecto..."></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="responsable">Responsable (Dirección):</label>
+                    <input type="text" id="responsable" placeholder="0x..." readonly>
+                </div>
+                
+                <div class="form-group">
+                    <label for="fechaFin">Fecha de Finalización:</label>
+                    <input type="date" id="fechaFin">
+                </div>
+                
+                <button id="createProject" class="btn btn-success" disabled>Crear Proyecto</button>
             </div>
-            
-            <button class="btn btn-success" onclick="createProject()">Crear Proyecto</button>
         </div>
     </div>
 
     <script>
-        console.log('🚀 dIAra V2 iniciando...');
-        
-        // Configuración
+        // Configuración del contrato ACTUALIZADO
         const CONTRACT_ADDRESS = "0x4b3072893f161ecb4b7f4794b6a8a036eb22aa27";
-        const SEPOLIA_CHAIN_ID = "0xaa36a7"; // 11155111 en hexadecimal
+        const SEPOLIA_CHAIN_ID = "0xaa36a7";
         
-        // ABI simplificado
+        // ABI del contrato NUEVO
         const CONTRACT_ABI = [
+            // Funciones nuevas del contrato V2
             "function crearProyecto(uint256 _numeroProyecto, string _nombreProyecto, string _ubicacion, string _descripcion, address _responsable, uint256 _fechaFin) public",
-            "function totalProyectos() public view returns (uint256)",
-            "function totalMensajes() public view returns (uint256)",
+            "function registrarDeteccionIA(uint256 _numeroProyecto, string _deteccionPersona, string _equipos, string _fechaRegistro, string _imagenIPFS) public",
+            "function obtenerEstadisticas() public view returns (uint256, uint256, uint256)",
+            "function leerUltimaDeteccion() public view returns (uint256, string, string, string, string, address, uint256)",
             "function esAdministrador(address) public view returns (bool)",
-            "function obtenerEstadisticas() public view returns (uint256, uint256, uint256)"
+            // Funciones legacy para compatibilidad
+            "function leerUltimoMensaje() public view returns (string)",
+            "function totalMensajes() public view returns (uint256)",
+            "function totalProyectos() public view returns (uint256)"
         ];
 
         // Variables globales
@@ -269,343 +401,461 @@
         let contract = null;
         let userAccount = null;
 
-        // Función para mostrar mensajes
-        function showStatus(message, type = 'info') {
-            console.log(`${type.toUpperCase()}: ${message}`);
+        // Esperar a que el DOM esté completamente cargado
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('dIAra V2 inicializando...');
             
+            // Configurar fecha actual
+            const today = new Date().toLocaleDateString('es-ES');
+            document.getElementById('fechaRegistro').value = today;
+            
+            // Obtener elementos del DOM
+            const connectWalletBtn = document.getElementById('connectWallet');
+            const walletStatus = document.getElementById('walletStatus');
             const statusMessages = document.getElementById('statusMessages');
-            const statusDiv = document.createElement('div');
-            statusDiv.className = `status ${type}`;
-            statusDiv.textContent = message;
-            statusMessages.innerHTML = '';
-            statusMessages.appendChild(statusDiv);
-            
-            setTimeout(() => {
-                if (statusDiv.parentNode) {
-                    statusDiv.parentNode.removeChild(statusDiv);
-                }
-            }, 5000);
-        }
+            const readLastMessageBtn = document.getElementById('readLastMessage');
+            const getTotalMessagesBtn = document.getElementById('getTotalMessages');
+            const getStatsBtn = document.getElementById('getStats');
+            const getLastDetectionBtn = document.getElementById('getLastDetection');
+            const readResults = document.getElementById('readResults');
+            const registerDetectionBtn = document.getElementById('registerDetection');
+            const createProjectBtn = document.getElementById('createProject');
 
-        // Verificar al cargar la página
-        window.addEventListener('load', function() {
-            console.log('✅ Página cargada, verificando MetaMask...');
-            checkInitialState();
-        });
-
-        function checkInitialState() {
-            if (typeof window.ethereum !== 'undefined') {
-                showStatus('✅ MetaMask detectado', 'success');
-                document.getElementById('contractStatus').textContent = 'MetaMask disponible';
+            // Función para mostrar mensajes de estado
+            function showStatus(message, type = 'info') {
+                console.log(`${type.toUpperCase()}: ${message}`);
+                const statusDiv = document.createElement('div');
+                statusDiv.className = `status ${type}`;
+                statusDiv.textContent = message;
+                statusMessages.innerHTML = '';
+                statusMessages.appendChild(statusDiv);
                 
-                // Verificar si ya está conectado
-                window.ethereum.request({ method: 'eth_accounts' })
-                    .then(accounts => {
-                        if (accounts.length > 0) {
-                            showStatus(`Wallet ya conectada: ${accounts[0].slice(0,6)}...${accounts[0].slice(-4)}`, 'info');
-                            userAccount = accounts[0];
-                            document.getElementById('walletStatus').textContent = `Conectado: ${userAccount.slice(0,6)}...${userAccount.slice(-4)}`;
-                        }
-                    })
-                    .catch(err => console.error('Error verificando cuentas:', err));
-            } else {
-                showStatus('❌ MetaMask no detectado. Instala MetaMask primero', 'error');
-                document.getElementById('contractStatus').textContent = 'MetaMask requerido';
-                document.getElementById('connectWallet').disabled = true;
+                setTimeout(() => {
+                    if (statusDiv.parentNode) {
+                        statusDiv.parentNode.removeChild(statusDiv);
+                    }
+                }, 5000);
             }
-        }
 
-        // Función de diagnóstico
-        async function runDiagnosis() {
-            console.log('🔍 Iniciando diagnóstico...');
-            
-            const diagnosisSection = document.getElementById('diagnosisSection');
-            const results = document.getElementById('diagnosisResults');
-            
-            diagnosisSection.style.display = 'block';
-            results.innerHTML = '<div class="loading"></div> Ejecutando diagnóstico...';
-            
-            let diagnosis = '';
-            
-            try {
-                // 1. Verificar MetaMask
+            // Función para cambiar pestañas
+            window.showTab = function(tabName) {
+                // Ocultar todos los contenidos
+                const contents = document.querySelectorAll('.tab-content');
+                contents.forEach(content => content.classList.remove('active'));
+                
+                // Desactivar todas las pestañas
+                const tabs = document.querySelectorAll('.tab');
+                tabs.forEach(tab => tab.classList.remove('active'));
+                
+                // Mostrar el contenido seleccionado
+                document.getElementById(tabName).classList.add('active');
+                
+                // Activar la pestaña seleccionada
+                event.target.classList.add('active');
+            }
+
+            // Verificar MetaMask
+            function checkMetaMask() {
                 if (typeof window.ethereum !== 'undefined') {
-                    diagnosis += '✅ MetaMask: Instalado<br>';
-                    console.log('✅ MetaMask detectado');
-                    
-                    // 2. Verificar cuentas
-                    try {
-                        const accounts = await window.ethereum.request({ method: 'eth_accounts' });
-                        if (accounts.length > 0) {
-                            diagnosis += `✅ Cuenta: ${accounts[0]}<br>`;
-                            console.log('✅ Cuenta:', accounts[0]);
-                        } else {
-                            diagnosis += '⚠️ Cuenta: No conectada<br>';
-                            console.log('⚠️ No hay cuentas conectadas');
-                        }
-                    } catch (e) {
-                        diagnosis += `❌ Error cuentas: ${e.message}<br>`;
-                        console.error('❌ Error verificando cuentas:', e);
-                    }
-                    
-                    // 3. Verificar red
-                    try {
-                        const chainId = await window.ethereum.request({ method: 'eth_chainId' });
-                        const chainIdDecimal = parseInt(chainId, 16);
-                        console.log('🔗 Chain ID:', chainId, '(', chainIdDecimal, ')');
-                        
-                        if (chainId === SEPOLIA_CHAIN_ID) {
-                            diagnosis += '✅ Red: Sepolia Testnet<br>';
-                        } else {
-                            diagnosis += `❌ Red incorrecta: ${chainIdDecimal}. Se requiere Sepolia (11155111)<br>`;
-                        }
-                    } catch (e) {
-                        diagnosis += `❌ Error red: ${e.message}<br>`;
-                        console.error('❌ Error verificando red:', e);
-                    }
-                    
-                    // 4. Verificar contrato
-                    try {
-                        const tempProvider = new ethers.BrowserProvider(window.ethereum);
-                        const code = await tempProvider.getCode(CONTRACT_ADDRESS);
-                        
-                        if (code !== '0x') {
-                            diagnosis += '✅ Contrato: Encontrado<br>';
-                            console.log('✅ Contrato desplegado');
-                            
-                            // Probar función
-                            const tempContract = new ethers.Contract(CONTRACT_ADDRESS, CONTRACT_ABI, tempProvider);
-                            const totalProyectos = await tempContract.totalProyectos();
-                            diagnosis += `✅ Función: ${totalProyectos} proyectos registrados<br>`;
-                            console.log('✅ Total proyectos:', totalProyectos.toString());
-                            
-                        } else {
-                            diagnosis += '❌ Contrato: No encontrado<br>';
-                            console.error('❌ Contrato no encontrado');
-                        }
-                    } catch (e) {
-                        diagnosis += `❌ Error contrato: ${e.message}<br>`;
-                        console.error('❌ Error verificando contrato:', e);
-                    }
-                    
+                    showStatus('✅ MetaMask detectado. Haz clic en "Conectar MetaMask".', 'success');
+                    return true;
                 } else {
-                    diagnosis += '❌ MetaMask: No instalado<br>';
-                    diagnosis += '💡 Instalar: <a href="https://metamask.io" target="_blank">metamask.io</a><br>';
+                    showStatus('❌ MetaMask no detectado. Instálalo desde metamask.io', 'error');
+                    connectWalletBtn.disabled = true;
+                    connectWalletBtn.textContent = 'Instalar MetaMask';
+                    return false;
                 }
-                
-                diagnosis += '<br><strong>🔧 Instrucciones:</strong><br>';
-                diagnosis += '1. Instalar MetaMask si no lo tienes<br>';
-                diagnosis += '2. Conectar wallet<br>';
-                diagnosis += '3. Cambiar a red Sepolia<br>';
-                diagnosis += '4. Conseguir ETH de prueba en sepoliafaucet.com<br>';
-                
-            } catch (error) {
-                diagnosis += `❌ Error general: ${error.message}<br>`;
-                console.error('❌ Error en diagnóstico:', error);
             }
-            
-            results.innerHTML = diagnosis;
-        }
 
-        // Conectar wallet simplificado
-        async function connectWallet() {
-            console.log('🔗 Intentando conectar wallet...');
-            
-            try {
-                if (typeof window.ethereum === 'undefined') {
-                    showStatus('MetaMask no está instalado', 'error');
-                    return;
-                }
-
-                showStatus('Conectando wallet...', 'info');
-                
-                // Solicitar cuentas
-                const accounts = await window.ethereum.request({
-                    method: 'eth_requestAccounts'
-                });
-                
-                console.log('✅ Cuentas obtenidas:', accounts);
-                
-                if (accounts.length === 0) {
-                    showStatus('No se seleccionó ninguna cuenta', 'error');
-                    return;
-                }
-                
-                userAccount = accounts[0];
-                
-                // Verificar red
-                const chainId = await window.ethereum.request({ method: 'eth_chainId' });
-                console.log('🔗 Chain ID actual:', chainId);
-                
-                if (chainId !== SEPOLIA_CHAIN_ID) {
-                    showStatus('Cambiando a red Sepolia...', 'info');
-                    
-                    try {
-                        await window.ethereum.request({
-                            method: 'wallet_switchEthereumChain',
-                            params: [{ chainId: SEPOLIA_CHAIN_ID }]
-                        });
-                    } catch (switchError) {
-                        console.error('Error cambiando red:', switchError);
-                        showStatus('Por favor cambia manualmente a red Sepolia en MetaMask', 'error');
+            // Función para conectar wallet
+            async function connectWallet() {
+                try {
+                    if (!window.ethereum) {
+                        showStatus('MetaMask no está disponible', 'error');
                         return;
                     }
-                }
-                
-                // Configurar provider y contrato
-                provider = new ethers.BrowserProvider(window.ethereum);
-                signer = await provider.getSigner();
-                contract = new ethers.Contract(CONTRACT_ADDRESS, CONTRACT_ABI, signer);
-                
-                // Actualizar UI
-                document.getElementById('walletStatus').textContent = `Conectado: ${userAccount.slice(0,6)}...${userAccount.slice(-4)}`;
-                document.getElementById('connectWallet').textContent = '✅ Conectado';
-                document.getElementById('connectWallet').disabled = true;
-                document.getElementById('responsable').value = userAccount;
-                
-                showStatus('¡Wallet conectada exitosamente!', 'success');
-                
-                // Verificar si es administrador
-                checkAdmin();
-                
-            } catch (error) {
-                console.error('❌ Error conectando:', error);
-                
-                let errorMsg = 'Error conectando wallet: ';
-                if (error.code === 4001) {
-                    errorMsg += 'Conexión rechazada por el usuario';
-                } else {
-                    errorMsg += error.message;
-                }
-                
-                showStatus(errorMsg, 'error');
-            }
-        }
 
-        // Verificar permisos de administrador
-        async function checkAdmin() {
-            try {
-                if (!contract || !userAccount) return;
-                
-                const isAdmin = await contract.esAdministrador(userAccount);
-                console.log('👤 Es administrador:', isAdmin);
-                
-                if (isAdmin) {
-                    document.getElementById('adminSection').style.display = 'block';
-                    showStatus('✅ Eres administrador - Puedes crear proyectos', 'success');
-                } else {
-                    showStatus('ℹ️ Usuario regular - Puedes ver estadísticas', 'info');
+                    showStatus('Conectando wallet...', 'info');
+                    
+                    const accounts = await window.ethereum.request({
+                        method: 'eth_requestAccounts'
+                    });
+                    
+                    const chainId = await window.ethereum.request({
+                        method: 'eth_chainId'
+                    });
+                    
+                    if (chainId !== SEPOLIA_CHAIN_ID) {
+                        try {
+                            await window.ethereum.request({
+                                method: 'wallet_switchEthereumChain',
+                                params: [{ chainId: SEPOLIA_CHAIN_ID }]
+                            });
+                        } catch (switchError) {
+                            showStatus('Por favor cambia a la red Sepolia en MetaMask', 'error');
+                            return;
+                        }
+                    }
+                    
+                    provider = new ethers.BrowserProvider(window.ethereum);
+                    signer = await provider.getSigner();
+                    contract = new ethers.Contract(CONTRACT_ADDRESS, CONTRACT_ABI, signer);
+                    userAccount = accounts[0];
+                    
+                    walletStatus.textContent = `Conectado: ${userAccount.slice(0,6)}...${userAccount.slice(-4)}`;
+                    connectWalletBtn.textContent = 'Wallet Conectado ✅';
+                    connectWalletBtn.disabled = true;
+                    registerDetectionBtn.disabled = false;
+                    document.getElementById('responsable').value = userAccount;
+                    
+                    showStatus('Wallet conectado exitosamente!', 'success');
+                    
+                    // Verificar permisos de administrador
+                    checkAdminPermissions();
+                    
+                    // Cargar estadísticas
+                    loadStats();
+                    
+                } catch (error) {
+                    console.error('Error conectando wallet:', error);
+                    showStatus('Error conectando wallet: ' + error.message, 'error');
                 }
-                
-            } catch (error) {
-                console.error('Error verificando admin:', error);
             }
-        }
 
-        // Pruebas individuales
-        async function testMetaMask() {
-            const results = document.getElementById('testResults');
-            results.style.display = 'block';
-            
-            if (typeof window.ethereum !== 'undefined') {
-                results.innerHTML = '✅ MetaMask está instalado y disponible';
-            } else {
-                results.innerHTML = '❌ MetaMask no detectado';
+            // Verificar permisos de administrador
+            async function checkAdminPermissions() {
+                try {
+                    if (!contract || !userAccount) return;
+                    
+                    const isAdmin = await contract.esAdministrador(userAccount);
+                    console.log('Es administrador:', isAdmin);
+                    
+                    if (isAdmin) {
+                        document.getElementById('proyectosTab').style.display = 'block';
+                        document.getElementById('createProject').disabled = false;
+                        showStatus('✅ Eres administrador - Puedes crear proyectos', 'success');
+                    } else {
+                        showStatus('ℹ️ Usuario regular - Puedes registrar detecciones', 'info');
+                    }
+                    
+                } catch (error) {
+                    console.error('Error verificando permisos:', error);
+                }
             }
-        }
 
-        async function testContract() {
-            const results = document.getElementById('testResults');
-            results.style.display = 'block';
-            results.innerHTML = 'Probando contrato...';
-            
-            try {
-                if (typeof window.ethereum === 'undefined') {
-                    results.innerHTML = '❌ MetaMask requerido para probar contrato';
-                    return;
+            // Cargar estadísticas
+            async function loadStats() {
+                try {
+                    if (!provider) {
+                        provider = new ethers.BrowserProvider(window.ethereum);
+                    }
+                    
+                    const readOnlyContract = new ethers.Contract(CONTRACT_ADDRESS, CONTRACT_ABI, provider);
+                    const [totalProyectos, totalDetecciones, proyectosActivos] = await readOnlyContract.obtenerEstadisticas();
+                    
+                    document.getElementById('totalProjects').textContent = totalProyectos.toString();
+                    document.getElementById('totalDetections').textContent = totalDetecciones.toString();
+                    document.getElementById('activeProjects').textContent = proyectosActivos.toString();
+                    
+                    document.getElementById('statsContainer').style.display = 'flex';
+                    
+                } catch (error) {
+                    console.error('Error cargando estadísticas:', error);
                 }
-                
-                const tempProvider = new ethers.BrowserProvider(window.ethereum);
-                const tempContract = new ethers.Contract(CONTRACT_ADDRESS, CONTRACT_ABI, tempProvider);
-                
-                const totalProyectos = await tempContract.totalProyectos();
-                results.innerHTML = `✅ Contrato funcional. Total proyectos: ${totalProyectos}`;
-                
-            } catch (error) {
-                console.error('Error probando contrato:', error);
-                results.innerHTML = `❌ Error probando contrato: ${error.message}`;
             }
-        }
 
-        async function getStats() {
-            const results = document.getElementById('testResults');
-            results.style.display = 'block';
-            results.innerHTML = 'Obteniendo estadísticas...';
-            
-            try {
-                if (typeof window.ethereum === 'undefined') {
-                    results.innerHTML = '❌ MetaMask requerido';
-                    return;
+            // Función para leer último mensaje (legacy)
+            async function readLastMessage() {
+                try {
+                    showStatus('Leyendo último mensaje...', 'info');
+                    
+                    if (!provider) {
+                        provider = new ethers.BrowserProvider(window.ethereum);
+                    }
+                    
+                    const readOnlyContract = new ethers.Contract(CONTRACT_ADDRESS, CONTRACT_ABI, provider);
+                    const mensaje = await readOnlyContract.leerUltimoMensaje();
+                    
+                    readResults.innerHTML = `
+                        <div class="message-display">
+                            <h4>Último Mensaje (Formato Legacy):</h4>
+                            <p>${mensaje}</p>
+                        </div>
+                    `;
+                    
+                    showStatus('Mensaje leído exitosamente', 'success');
+                    
+                } catch (error) {
+                    console.error('Error leyendo mensaje:', error);
+                    showStatus('Error leyendo mensaje: ' + error.message, 'error');
                 }
-                
-                const tempProvider = new ethers.BrowserProvider(window.ethereum);
-                const tempContract = new ethers.Contract(CONTRACT_ADDRESS, CONTRACT_ABI, tempProvider);
-                
-                const [totalProyectos, totalDetecciones, proyectosActivos] = await tempContract.obtenerEstadisticas();
-                
-                results.innerHTML = `
-                    <strong>📊 Estadísticas del Sistema:</strong><br>
-                    • Total proyectos: ${totalProyectos}<br>
-                    • Total detecciones: ${totalDetecciones}<br>
-                    • Proyectos activos: ${proyectosActivos}
-                `;
-                
-            } catch (error) {
-                console.error('Error obteniendo estadísticas:', error);
-                results.innerHTML = `❌ Error: ${error.message}`;
             }
-        }
 
-        // Crear proyecto
-        async function createProject() {
-            try {
-                if (!contract) {
-                    showStatus('Conecta tu wallet primero', 'error');
-                    return;
+            // Función para obtener última detección (nueva)
+            async function getLastDetection() {
+                try {
+                    showStatus('Obteniendo última detección...', 'info');
+                    
+                    if (!provider) {
+                        provider = new ethers.BrowserProvider(window.ethereum);
+                    }
+                    
+                    const readOnlyContract = new ethers.Contract(CONTRACT_ADDRESS, CONTRACT_ABI, provider);
+                    const [numeroProyecto, deteccionPersona, equipos, fechaRegistro, imagenIPFS, registradoPor, timestamp] = await readOnlyContract.leerUltimaDeteccion();
+                    
+                    const fecha = new Date(parseInt(timestamp.toString()) * 1000).toLocaleString();
+                    
+                    readResults.innerHTML = `
+                        <div class="message-display">
+                            <h4>📋 Última Detección:</h4>
+                            <p><strong>Proyecto:</strong> ${numeroProyecto}</p>
+                            <p><strong>Personas:</strong> ${deteccionPersona}</p>
+                            <p><strong>Equipos:</strong> ${equipos}</p>
+                            <p><strong>Fecha:</strong> ${fechaRegistro}</p>
+                            <p><strong>IPFS:</strong> ${imagenIPFS}</p>
+                            <p><strong>Registrado por:</strong> ${registradoPor}</p>
+                            <p><strong>Timestamp:</strong> ${fecha}</p>
+                            <p><strong>Ver imagen:</strong> <a href="https://ipfs.io/ipfs/${imagenIPFS}" target="_blank">Abrir en IPFS</a></p>
+                        </div>
+                    `;
+                    
+                    showStatus('Última detección obtenida exitosamente', 'success');
+                    
+                } catch (error) {
+                    console.error('Error obteniendo última detección:', error);
+                    showStatus('Error: ' + error.message, 'error');
                 }
-                
-                const numeroProyecto = document.getElementById('numeroProyecto').value;
-                const nombreProyecto = document.getElementById('nombreProyecto').value;
-                const responsable = document.getElementById('responsable').value;
-                
-                if (!numeroProyecto || !nombreProyecto || !responsable) {
-                    showStatus('Completa todos los campos', 'error');
-                    return;
-                }
-                
-                showStatus('Creando proyecto...', 'info');
-                
-                const fechaFin = Math.floor(Date.now() / 1000) + (30 * 24 * 60 * 60); // 30 días
-                
-                const tx = await contract.crearProyecto(
-                    parseInt(numeroProyecto),
-                    nombreProyecto,
-                    "Ubicación por defecto",
-                    "Descripción por defecto",
-                    responsable,
-                    fechaFin
-                );
-                
-                showStatus(`Transacción enviada: ${tx.hash}`, 'info');
-                
-                const receipt = await tx.wait();
-                showStatus(`✅ Proyecto creado en bloque ${receipt.blockNumber}`, 'success');
-                
-            } catch (error) {
-                console.error('Error creando proyecto:', error);
-                showStatus(`Error: ${error.reason || error.message}`, 'error');
             }
-        }
+
+            // Función para obtener total de mensajes
+            async function getTotalMessages() {
+                try {
+                    showStatus('Obteniendo total de mensajes...', 'info');
+                    
+                    if (!provider) {
+                        provider = new ethers.BrowserProvider(window.ethereum);
+                    }
+                    
+                    const readOnlyContract = new ethers.Contract(CONTRACT_ADDRESS, CONTRACT_ABI, provider);
+                    const total = await readOnlyContract.totalMensajes();
+                    
+                    readResults.innerHTML = `
+                        <div class="message-display">
+                            <h4>Total de Detecciones:</h4>
+                            <p><strong>${total.toString()}</strong> detecciones registradas en el sistema</p>
+                        </div>
+                    `;
+                    
+                    showStatus('Total obtenido exitosamente', 'success');
+                    
+                } catch (error) {
+                    console.error('Error obteniendo total:', error);
+                    showStatus('Error obteniendo total: ' + error.message, 'error');
+                }
+            }
+
+            // Función para obtener estadísticas completas
+            async function getCompleteStats() {
+                try {
+                    showStatus('Obteniendo estadísticas completas...', 'info');
+                    
+                    if (!provider) {
+                        provider = new ethers.BrowserProvider(window.ethereum);
+                    }
+                    
+                    const readOnlyContract = new ethers.Contract(CONTRACT_ADDRESS, CONTRACT_ABI, provider);
+                    const [totalProyectos, totalDetecciones, proyectosActivos] = await readOnlyContract.obtenerEstadisticas();
+                    
+                    readResults.innerHTML = `
+                        <div class="message-display">
+                            <h4>📊 Estadísticas Completas del Sistema:</h4>
+                            <p><strong>Total de Proyectos:</strong> ${totalProyectos}</p>
+                            <p><strong>Total de Detecciones:</strong> ${totalDetecciones}</p>
+                            <p><strong>Proyectos Activos:</strong> ${proyectosActivos}</p>
+                            <p><strong>Proyectos Inactivos:</strong> ${parseInt(totalProyectos) - parseInt(proyectosActivos)}</p>
+                        </div>
+                    `;
+                    
+                    showStatus('Estadísticas obtenidas exitosamente', 'success');
+                    
+                } catch (error) {
+                    console.error('Error obteniendo estadísticas:', error);
+                    showStatus('Error obteniendo estadísticas: ' + error.message, 'error');
+                }
+            }
+
+            // Función para registrar detección (NUEVA con proyecto e IPFS)
+            async function registerDetection() {
+                try {
+                    if (!contract) {
+                        showStatus('Por favor conecta tu wallet primero', 'error');
+                        return;
+                    }
+                    
+                    const numeroProyecto = document.getElementById('numeroProyecto').value;
+                    const deteccionPersona = document.getElementById('deteccionPersona').value;
+                    const equipos = document.getElementById('equipos').value;
+                    const fechaRegistro = document.getElementById('fechaRegistro').value;
+                    const imagenIPFS = document.getElementById('imagenIPFS').value;
+                    
+                    if (!numeroProyecto || !deteccionPersona || !equipos || !fechaRegistro || !imagenIPFS) {
+                        showStatus('Por favor completa todos los campos', 'error');
+                        return;
+                    }
+                    
+                    registerDetectionBtn.disabled = true;
+                    registerDetectionBtn.innerHTML = '<span class="loading"></span>Registrando...';
+                    
+                    showStatus('Enviando transacción...', 'info');
+                    
+                    const tx = await contract.registrarDeteccionIA(
+                        parseInt(numeroProyecto),
+                        deteccionPersona,
+                        equipos,
+                        fechaRegistro,
+                        imagenIPFS
+                    );
+                    
+                    showStatus(`Transacción enviada. Hash: ${tx.hash}`, 'info');
+                    
+                    const receipt = await tx.wait();
+                    
+                    showStatus(`✅ Detección registrada en bloque ${receipt.blockNumber}!`, 'success');
+                    
+                    // Actualizar estadísticas
+                    setTimeout(loadStats, 2000);
+                    
+                } catch (error) {
+                    console.error('Error registrando detección:', error);
+                    let errorMessage = 'Error registrando detección: ';
+                    
+                    if (error.code === 'ACTION_REJECTED') {
+                        errorMessage += 'Transacción cancelada por el usuario';
+                    } else if (error.code === 'INSUFFICIENT_FUNDS') {
+                        errorMessage += 'Fondos insuficientes para gas';
+                    } else if (error.reason) {
+                        errorMessage += error.reason;
+                    } else {
+                        errorMessage += error.message;
+                    }
+                    
+                    showStatus(errorMessage, 'error');
+                } finally {
+                    registerDetectionBtn.disabled = false;
+                    registerDetectionBtn.innerHTML = 'Registrar Detección';
+                }
+            }
+
+            // Función para crear proyecto
+            async function createProject() {
+                try {
+                    if (!contract) {
+                        showStatus('Por favor conecta tu wallet primero', 'error');
+                        return;
+                    }
+                    
+                    const numeroProyecto = document.getElementById('newNumeroProyecto').value;
+                    const nombreProyecto = document.getElementById('nombreProyecto').value;
+                    const ubicacion = document.getElementById('ubicacion').value;
+                    const descripcion = document.getElementById('descripcion').value;
+                    const responsable = document.getElementById('responsable').value;
+                    const fechaFin = document.getElementById('fechaFin').value;
+                    
+                    if (!numeroProyecto || !nombreProyecto || !responsable || !fechaFin) {
+                        showStatus('Por favor completa todos los campos obligatorios', 'error');
+                        return;
+                    }
+                    
+                    const fechaFinTimestamp = Math.floor(new Date(fechaFin).getTime() / 1000);
+                    
+                    createProjectBtn.disabled = true;
+                    createProjectBtn.innerHTML = '<span class="loading"></span>Creando...';
+                    
+                    showStatus('Enviando transacción para crear proyecto...', 'info');
+                    
+                    const tx = await contract.crearProyecto(
+                        parseInt(numeroProyecto),
+                        nombreProyecto,
+                        ubicacion || "",
+                        descripcion || "",
+                        responsable,
+                        fechaFinTimestamp
+                    );
+                    
+                    showStatus(`Transacción enviada: ${tx.hash}`, 'info');
+                    
+                    const receipt = await tx.wait();
+                    
+                    showStatus(`✅ Proyecto creado en bloque ${receipt.blockNumber}!`, 'success');
+                    
+                    // Limpiar formulario
+                    document.getElementById('newNumeroProyecto').value = '';
+                    document.getElementById('nombreProyecto').value = '';
+                    document.getElementById('ubicacion').value = '';
+                    document.getElementById('descripcion').value = '';
+                    document.getElementById('fechaFin').value = '';
+                    
+                    // Actualizar estadísticas
+                    setTimeout(loadStats, 2000);
+                    
+                } catch (error) {
+                    console.error('Error creando proyecto:', error);
+                    let errorMessage = 'Error creando proyecto: ';
+                    
+                    if (error.code === 'ACTION_REJECTED') {
+                        errorMessage += 'Transacción cancelada por el usuario';
+                    } else if (error.reason) {
+                        errorMessage += error.reason;
+                    } else {
+                        errorMessage += error.message;
+                    }
+                    
+                    showStatus(errorMessage, 'error');
+                } finally {
+                    createProjectBtn.disabled = false;
+                    createProjectBtn.innerHTML = 'Crear Proyecto';
+                }
+            }
+
+            // Agregar event listeners
+            connectWalletBtn.addEventListener('click', connectWallet);
+            readLastMessageBtn.addEventListener('click', readLastMessage);
+            getTotalMessagesBtn.addEventListener('click', getTotalMessages);
+            getStatsBtn.addEventListener('click', getCompleteStats);
+            getLastDetectionBtn.addEventListener('click', getLastDetection);
+            registerDetectionBtn.addEventListener('click', registerDetection);
+            createProjectBtn.addEventListener('click', createProject);
+
+            // Verificar MetaMask al cargar
+            checkMetaMask();
+
+            // Cargar estadísticas iniciales
+            setTimeout(loadStats, 1000);
+
+            // Detectar cambios de cuenta
+            if (window.ethereum) {
+                window.ethereum.on('accountsChanged', (accounts) => {
+                    if (accounts.length === 0) {
+                        walletStatus.textContent = 'Estado: Desconectado';
+                        connectWalletBtn.textContent = 'Conectar MetaMask';
+                        connectWalletBtn.disabled = false;
+                        registerDetectionBtn.disabled = true;
+                        createProjectBtn.disabled = true;
+                        document.getElementById('proyectosTab').style.display = 'none';
+                        provider = null;
+                        signer = null;
+                        contract = null;
+                        userAccount = null;
+                    } else {
+                        location.reload();
+                    }
+                });
+                
+                window.ethereum.on('chainChanged', () => {
+                    location.reload();
+                });
+            }
+        });
     </script>
 </body>
 </html>
